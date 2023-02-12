@@ -46,6 +46,9 @@ function checkInput(){
     if(input === currentQuote){
         totalScore += 1;
     }
+    else{
+        inputElement.style.borderColor = 'red';
+    }
     currentQuoteIndex++;
     showNextQuote();
 }
@@ -55,6 +58,16 @@ inputElement.addEventListener('keyup', function(event){
         checkInput();
     }
 });
+
+inputElement.addEventListener('input', function(event){
+    if(inputElement.value !== quotes[currentQuoteIndex].substring(0, inputElement.value.length)){
+        inputElement.style.borderColor = 'red';
+    }
+    else{
+        inputElement.style.borderColor = 'initial';
+    }
+});
+
 
 startButton.addEventListener('click', function(event){
     gameContainer.removeChild(startButton);
