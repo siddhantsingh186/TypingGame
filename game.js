@@ -25,12 +25,6 @@ const gameContainer = document.getElementById('game-container');
 
 function showNextQuote(){
     if(currentQuoteIndex >= quotes.length){
-        const endTime = Date.now();
-        const totalTime = (endTime - startTime) / 1000;
-        const scoreString = `Score: ${totalScore} | Time: ${totalTime.toFixed(2)} seconds`;
-        scoreboardElement.textContent = scoreString;
-        localStorage.setItem('score', totalScore);
-        localStorage.setItem('time', totalTime);
         showLeaderboard();
         return;
     }
@@ -83,23 +77,36 @@ function startGame(){
     showNextQuote();
 
     const timerInterval = setInterval(function() {
-        const elapsedTime = (Date.now() - startTime) / 1000;
-        scoreboardElement.textContent = `Score: ${totalScore} | Time: ${elapsedTime.toFixed(2)}`;
         if (currentQuoteIndex >= quotes.length) {
           clearInterval(timerInterval);
+        }
+        else{
+            const elapsedTime = (Date.now() - startTime) / 1000;
+            scoreboardElement.textContent = `Score: ${totalScore} | Time: ${elapsedTime.toFixed(2)}`;
         }
     }, 100);
 }
 
 function showLeaderboard(){
+    const endTime = Date.now();
+    const totalTime = (endTime - startTime) / 1000;
+
+    localStorage.setItem('score', totalScore);
+    localStorage.setItem('time', totalTime);
+    localStorage.setItem('avgTime', totalTime/quotes.length);
+    let displayScore = localStorage.getItem('score');
+    let displayTime = localStorage.getItem('time');
+    const scoreString = `Score: ${displayScore} | Time: ${displayTime} seconds`;
+    scoreboardElement.textContent = "";
+    scoreboardElement.textContent = scoreString;
+
     document.getElementById('instruction').textContent = "";
     document.querySelector('h1').textContent = "Leaderboard";
     quoteDisplayElement.hidden = true;
     inputElement.hidden = true;
-    leaderboardElement.innerHTML = "";
     let scores = localStorage.getItem('scores')? JSON.parse(localStorage.getItem('scores')) : [];
-    localStorage.getItem('score')? scores.push({score: localStorage.getItem('score'), time: localStorage.getItem('time')}) : null;
-
+    localStorage.getItem('score')? scores.push({score: localStorage.getItem('score'), time: localStorage.getItem('time'), avgTime: localStorage.getItem('avgTime')}) : null;
+    
     scores.sort(function(a,b){
         if(a.score !== b.score){
             return b.score - a.score;
@@ -114,7 +121,7 @@ function showLeaderboard(){
 
     for(let i=0;i<scores.length;i++){
         const scoreItem = document.createElement('li');
-        scoreItem.textContent = `${scores[i].score} | ${scores[i].time} seconds`;
+        scoreItem.textContent = `${scores[i].score} | ${scores[i].time} seconds | ${scores[i].avgTime} seconds per quote`;
         scoreList.appendChild(scoreItem);
     }
 
